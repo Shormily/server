@@ -26,15 +26,17 @@ async function run() {
   try {
     await client.connect()
     const userDB = client.db("userDB");
-    const userCollection = userDB.collection("user_collection");
     const recipesDB = client.db("recipesDB");
+    const usersDB = client.db("usersDB");
+    const usersCollection =usersDB.collection("usersCollection")
     const recipesCollection = userDB.collection("recipes_collection");
-
-    app.post("/user", async (req, res) => {
-      const user = req.body;
-      const result = await userCollection.insertOne(user);
-      res.send(result)
+    // Mongo emil users
+    app.post('/users', async (req, res) => {
+      const users = req.body;
+      const result = await usersCollection.insertOne(users);
+      res.send(result);
     })
+   
     // get add product
 
      app.post("/recipes", async (req, res) => {
@@ -79,6 +81,18 @@ async function run() {
     })
 
     // Get Update id end
+
+    // Get Delete product
+    app.delete("/recipes/:id", async (req, res) => {
+      const id = req.params.id
+      const result = await recipesCollection.deleteOne({
+        _id: new ObjectId(id)
+      }
+      );
+      console.log(id)
+      res.send(result)
+    })
+    // Get delete end
     
     console.log("successfully connected to MongoDB!");
   } finally {
