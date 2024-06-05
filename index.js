@@ -19,9 +19,15 @@ function createToken (users) {
 }
 
 function verifyToken(req, res, next) {
-  const authtoken = req.headers.authorization
-  console.log(authtoken);
-  
+  const token = req.headers.authorization;
+  const verify = jwt.verify(token, "secret");
+
+  // if (!verify?.email) {
+  //   return res.send('You are not authorized')
+  // }
+  // req.user = verify.email;
+  console.log(verify);
+  next()
 }
 
 // MongoDb
@@ -48,7 +54,7 @@ async function run() {
     const usersCollection =usersDB.collection("usersCollection")
     const recipesCollection = userDB.collection("recipes_collection");
     // Mongo emil users
-    app.post('/users', verifyToken, async (req, res) => {
+    app.post('/users',async (req, res) => {
       const users = req.body;
       const token = createToken(users);
       console.log(token);
