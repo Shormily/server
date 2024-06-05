@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 const express = require('express');
 const cors = require('cors');
-// const jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express()
 const port = 5000
@@ -10,45 +10,25 @@ app.use(cors());
 app.use(express.json());
 
 // jwt token
-// function createToken (users) {
-//   const token = jwt.sign(
-//     {
-//     data: 'foobar'
-//     }, 'secret', { expiresIn: '7d' });
-//   return token;
-// }
+function createToken (users) {
+  const token = jwt.sign(
+    {
+    data: 'foobar'
+    }, 'secret', { expiresIn: '7d' });
+  return token;
+}
 
-
-// function verifyToken(req, res, next) {
-//   const token = req.headers.authorization;
-//   const verify = jwt.verify(token, "secret");
-
-//   // if (!verify?.email) {
-//   //   return res.send('You are not authorized')
-//   // }
-//   // req.user = verify.email;
-//   console.log(verify);
-//   next()
-// }
-// Create token
-// const SECRET_KEY = "8251c309f40f11cd30e9b680510358d7197293b69b14512a8401788900d758b4";
-// const verifyToken = (req, res, next) => {
-//   const token = req.headers['authorization'];
-
-//   if (!token) {
-//       return res.status(403).json({ message: 'No token provided' });
-//   }
-
-//   jwt.verify(token, SECRET_KEY, (err, decoded) => {
-//       if (err) {
-//           return res.status(500).json({ message: 'Failed to authenticate token' });
-//       }
-//       req.user = decoded;
-//       next();
-//   });
-// };
-
-
+function verifyToken(req, res, next) {
+  const token = req.headers.authorization;
+  const verify = jwt.verify(token, "secret");
+  
+  if (!verify?.email) {
+    return res.send('You are not authorized')
+  }
+  req.user = verify.email;
+  console.log(verify);
+  next()
+}
 
 // MongoDb
 
@@ -73,7 +53,6 @@ async function run() {
     const usersDB = client.db("usersDB");
     const usersCollection =usersDB.collection("usersCollection")
     const recipesCollection = userDB.collection("recipes_collection");
-    
     // Mongo emil users
     app.post('/users',async (req, res) => {
       const users = req.body;
